@@ -573,6 +573,98 @@
       <p>Continuous AI-driven experimentation addresses this directly. Rather than waiting for performance degradation to trigger manual review, the system proactively searches for improvements every night. This creates a feedback loop where the strategy is always adapting, always testing, and always evolving — guided by data rather than human intuition or emotion.</p>
     </section>
 
+    <!-- 05: On-Chain Architecture -->
+    <section class="section" id="on-chain">
+      <div class="section-badge">05 — On-Chain Architecture</div>
+      <h2>Smart Contracts on Arbitrum</h2>
+      <p>REGIME.fi's fund operations are managed by smart contracts deployed on Arbitrum, an Ethereum Layer 2 network that provides low transaction costs and fast settlement while inheriting Ethereum's security guarantees.</p>
+      <p>The on-chain architecture consists of two primary contracts:</p>
+
+      <h3>RegimeStaking</h3>
+      <p>The core fund contract. RegimeStaking manages staker deposits, share issuance, position execution, and withdrawal processing. All fund capital flows through this contract.</p>
+      <ul>
+        <li><strong>Share-based NAV system</strong> — stakers receive shares proportional to their deposit at the current net asset value. As the fund trades profitably, NAV increases, and each share becomes worth more USDC.</li>
+        <li><strong>Epoch-based withdrawals</strong> — withdrawal requests are processed in daily settlement cycles (epochs), ensuring fair pricing for both departing and remaining stakers.</li>
+        <li><strong>Position lifecycle management</strong> — every trade follows a strict on-chain lifecycle with safety checks at each stage.</li>
+        <li><strong>Safety caps</strong> — no single trade can exceed 10% of the fund's total value, and total active exposure is capped at 50%. These limits are enforced at the contract level and cannot be overridden.</li>
+      </ul>
+
+      <!-- Position Lifecycle Diagram -->
+      <div class="diagram">
+        <div class="diagram-title">Position Lifecycle</div>
+        <div class="flow-row">
+          <div class="flow-node">Pending</div>
+          <div class="flow-arrow">&#8594;</div>
+          <div class="flow-node highlight">Open</div>
+          <div class="flow-arrow">&#8594;</div>
+          <div class="flow-node">Closing</div>
+          <div class="flow-arrow">&#8594;</div>
+          <div class="flow-node teal">Settled</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; font-size: 12px; color: var(--text-subtle); text-align: center;">
+          <div>Trade submitted<br>to venue</div>
+          <div>Confirmed on<br>exchange</div>
+          <div>Close order<br>submitted</div>
+          <div>PnL recorded<br>on-chain</div>
+        </div>
+      </div>
+
+      <h3>RegimeTreasury</h3>
+      <p>A separate contract that receives the team's share of trading profits. The treasury splits commissions evenly among team members, who can claim their share on demand. The contract enforces fair distribution — the owner cannot drain team commissions, and the rescue function explicitly protects allocated funds.</p>
+
+      <h3>Security by Design</h3>
+      <p>The contracts follow a principle of minimal approval: instead of granting blanket USDC spending authority, each operation approves only the exact amount required. Combined with the position safety caps, this creates multiple layers of protection for staker funds at the smart contract level.</p>
+    </section>
+
+    <!-- 06: Staking & NAV Mechanics -->
+    <section class="section" id="staking">
+      <div class="section-badge">06 — Staking &amp; NAV</div>
+      <h2>How Staking Works</h2>
+      <p>Staking into REGIME.fi is designed to be simple and fair. You deposit USDC, receive shares representing your ownership of the fund, and your shares appreciate in value as the fund trades profitably.</p>
+
+      <h3>Depositing</h3>
+      <p>When you deposit USDC into the fund, you receive shares at the current NAV (net asset value) price. The NAV starts at $1.00 per share and moves based on the fund's trading performance:</p>
+      <div class="callout">
+        <strong>NAV Formula:</strong><br>
+        <code>NAV = (Total USDC + Active Positions - Withdrawals Owed) / Total Shares</code>
+      </div>
+      <p>For example, if the NAV is $1.15 and you deposit 1,000 USDC, you receive approximately 869.57 shares. If the fund continues to perform and NAV rises to $1.30, your shares are now worth 1,130.43 USDC — a 13% gain.</p>
+
+      <!-- Staking Flow Diagram -->
+      <div class="diagram">
+        <div class="diagram-title">Staking Flow</div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+          <div class="flow-row">
+            <div class="flow-node highlight">Deposit USDC</div>
+          </div>
+          <div class="flow-arrow-down">&#8595;</div>
+          <div class="flow-row">
+            <div class="flow-node">Shares Issued at Current NAV</div>
+          </div>
+          <div class="flow-arrow-down">&#8595;</div>
+          <div class="flow-row">
+            <div class="flow-node">Fund Trades &bull; NAV Updates</div>
+          </div>
+          <div class="flow-arrow-down">&#8595;</div>
+          <div class="flow-row">
+            <div class="flow-node teal">Withdraw at Current NAV</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Withdrawing</h3>
+      <p>Withdrawals use an epoch-based settlement process. When you request a withdrawal, your shares are queued for the next settlement cycle. At the end of the epoch, all pending withdrawals are processed at the finalization NAV — the fund's value at the moment of settlement.</p>
+      <p>This design is intentional: pricing withdrawals at finalization NAV (rather than request NAV) prevents front-running and ensures fair treatment for stakers who remain in the fund. You always receive the true value of your shares at the time they are settled.</p>
+
+      <h3>Fair Pricing Guarantees</h3>
+      <ul>
+        <li><strong>No entry/exit fees</strong> — you pay no fees to deposit or withdraw</li>
+        <li><strong>Epoch finalization pricing</strong> — withdrawals are valued at settlement time, preventing manipulation</li>
+        <li><strong>Pro-rata share distribution</strong> — shares represent proportional ownership, not a fixed USDC amount</li>
+        <li><strong>Transparent NAV calculation</strong> — the formula accounts for active positions and pending obligations, visible on-chain</li>
+      </ul>
+    </section>
+
   </div>
 
 </body>

@@ -344,6 +344,15 @@
       .stat-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
+    /* === Footer === */
+    .wp-footer {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 48px 32px 64px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
     /* === Print === */
     @media print {
       :root {
@@ -362,13 +371,33 @@
       }
       .hero::before { display: none; }
       .hero-logo { font-size: 36pt; }
-      .section { padding: 32px 0; page-break-inside: avoid; }
+      /* Sections CAN break across pages — they're too long to avoid */
+      .section { padding: 32px 0; }
+      /* Keep headings with the content that follows them */
       .section h2 { page-break-after: avoid; }
+      .section h3 { page-break-after: avoid; }
+      /* Keep block elements together */
       .diagram { page-break-inside: avoid; }
       .stat-grid { page-break-inside: avoid; }
+      .callout { page-break-inside: avoid; }
+      table { page-break-inside: avoid; }
+      /* Avoid orphan/widow lines */
+      .section p { orphans: 3; widows: 3; }
+      .section li { page-break-inside: avoid; }
       .flow-node { box-shadow: none; }
       a { color: inherit; text-decoration: none; }
       .download-btn { display: none; }
+      /* Footer gets its own page, centered vertically */
+      .wp-footer {
+        page-break-before: always;
+        border-top: none;
+        padding: 0 32px;
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
     }
     /* === Download Button === */
     .download-btn {
@@ -1110,8 +1139,8 @@
     </section>
 
     <!-- Footer -->
-    <footer style="max-width: var(--content-max); margin: 0 auto; padding: 48px 32px 64px; border-top: 1px solid var(--border); text-align: center;">
-      <div style="font-family: var(--font-display); font-weight: 800; font-size: 24px; color: var(--text-primary); margin-bottom: 8px;">REGIME<span style="color: var(--yield-teal);">.fi</span></div>
+    <footer class="wp-footer">
+      <div style="font-family: var(--font-display); font-weight: 800; font-size: 32px; color: var(--text-primary); margin-bottom: 8px;">REGIME<span style="color: var(--yield-teal);">.fi</span></div>
       <div style="font-size: 14px; color: var(--text-subtle); margin-bottom: 16px;">Autonomous Trading Protocol on Arbitrum</div>
       <div style="display: flex; justify-content: center; gap: 24px; font-size: 13px;">
         <a href="https://regime.fi" style="color: var(--brand-blue); text-decoration: none;">Dashboard</a>

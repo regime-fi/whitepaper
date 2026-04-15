@@ -886,6 +886,194 @@
       </div>
     </section>
 
+    <!-- Appendix A: System Architecture -->
+    <section class="section" id="appendix-a">
+      <div class="section-badge appendix">Appendix A</div>
+      <h2>System Architecture</h2>
+      <p>The REGIME.fi system consists of three isolated components: the trading bot, the WebSocket relay, and the public dashboard. Data flows in one direction only — from the bot to the relay to connected dashboards.</p>
+
+      <!-- Data Flow Diagram -->
+      <div class="diagram">
+        <div class="diagram-title">Data Flow Architecture</div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Data Sources Row -->
+          <div style="text-align: center; font-size: 11px; color: var(--text-subtle); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Data Sources</div>
+          <div class="flow-row">
+            <div class="flow-node">gTrade<br><span style="font-size: 10px; color: var(--text-subtle);">WSS + REST</span></div>
+            <div class="flow-node">Kraken<br><span style="font-size: 10px; color: var(--text-subtle);">WSS OHLC</span></div>
+            <div class="flow-node">Ostium<br><span style="font-size: 10px; color: var(--text-subtle);">REST + GraphQL</span></div>
+          </div>
+
+          <div class="flow-arrow-down">&#8595;</div>
+
+          <!-- Processing Row -->
+          <div style="text-align: center; font-size: 11px; color: var(--text-subtle); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px;">Processing Pipeline</div>
+          <div class="flow-row">
+            <div class="flow-node highlight">Candle Builder</div>
+            <div class="flow-arrow">&#8594;</div>
+            <div class="flow-node highlight">Strategy Engine</div>
+            <div class="flow-arrow">&#8594;</div>
+            <div class="flow-node highlight">Paper Trader</div>
+          </div>
+
+          <div class="flow-arrow-down">&#8595;</div>
+
+          <!-- Output Row -->
+          <div style="text-align: center; font-size: 11px; color: var(--text-subtle); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px;">Output</div>
+          <div class="flow-row">
+            <div class="flow-node">SQLite DB</div>
+            <div class="flow-node teal">WS Relay</div>
+            <div class="flow-node">Console / TUI</div>
+          </div>
+
+          <div class="flow-arrow-down">&#8595;</div>
+
+          <div class="flow-row">
+            <div class="flow-node teal">Public Dashboard</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Trading Bot</h3>
+      <p>The core engine collects real-time market data from multiple venues, normalizes it into standardized candles, runs it through the mean-reversion strategy engine, and executes trades via the paper trader (or live trader). Each strategy runs in isolation with its own configuration, state, and database records.</p>
+
+      <h3>WebSocket Relay</h3>
+      <p>A lightweight broadcast service that accepts an outbound connection from the bot and distributes trading data to connected dashboard clients. The relay authenticates the bot via a shared secret and serves as a one-way bridge between the private trading infrastructure and the public dashboard.</p>
+
+      <h3>Database</h3>
+      <p>The bot uses SQLite for persistent storage, with per-strategy isolation via strategy ID columns. Key tables include position records, trade signals, signal scorecards, fund share events, NAV history, and market snapshots. The database is local to the bot server and is never exposed to external systems.</p>
+    </section>
+
+    <!-- Appendix B: Smart Contract Reference -->
+    <section class="section" id="appendix-b">
+      <div class="section-badge appendix">Appendix B</div>
+      <h2>Smart Contract Reference</h2>
+      <p>Both contracts are deployed on Arbitrum One. Source code is available in the project's contracts repository.</p>
+
+      <h3>Contract Addresses</h3>
+      <table>
+        <thead>
+          <tr><th>Contract</th><th>Network</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>RegimeStaking</td><td>Arbitrum One</td><td>Main fund contract</td></tr>
+          <tr><td>RegimeTreasury</td><td>Arbitrum One</td><td>Team commission distribution</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Key External Dependencies</h3>
+      <table>
+        <thead>
+          <tr><th>Contract</th><th>Address</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>USDC</td><td><code>0xaf88...5831</code></td><td>Fund denomination token</td></tr>
+          <tr><td>gTrade Diamond</td><td><code>0xFF16...f169</code></td><td>Gains Network trading</td></tr>
+          <tr><td>Ostium Trading</td><td><code>0x6D0b...2411</code></td><td>Ostium exchange</td></tr>
+        </tbody>
+      </table>
+
+      <h3>RegimeStaking — Key Functions</h3>
+      <table>
+        <thead>
+          <tr><th>Function</th><th>Access</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>stake(uint256)</code></td><td>Public</td><td>Deposit USDC, receive shares at current NAV</td></tr>
+          <tr><td><code>requestWithdrawal(uint256)</code></td><td>Public</td><td>Queue shares for next epoch settlement</td></tr>
+          <tr><td><code>claimWithdrawal()</code></td><td>Public</td><td>Claim settled USDC after epoch finalization</td></tr>
+          <tr><td><code>openPosition(...)</code></td><td>Owner</td><td>Submit trade to venue with safety cap checks</td></tr>
+          <tr><td><code>settlePosition(...)</code></td><td>Owner</td><td>Record PnL and update NAV after trade closes</td></tr>
+          <tr><td><code>finalizeEpoch()</code></td><td>Owner</td><td>Process pending withdrawals at current NAV</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Safety Invariants</h3>
+      <ul>
+        <li>Single position collateral ≤ 10% of total fund value</li>
+        <li>Sum of all active position collateral ≤ 50% of total fund value</li>
+        <li>USDC approval per operation = exact amount needed (no blanket approvals)</li>
+        <li>Withdrawal claims only available after epoch finalization</li>
+        <li>Position status transitions are strictly ordered: Pending → Open → Closing → Settled</li>
+      </ul>
+
+      <h3>RegimeTreasury — Key Functions</h3>
+      <table>
+        <thead>
+          <tr><th>Function</th><th>Access</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>receiveCommission(uint256)</code></td><td>Public</td><td>Accept USDC commission from staking contract</td></tr>
+          <tr><td><code>claim()</code></td><td>Member</td><td>Claim accumulated commission share</td></tr>
+          <tr><td><code>addMember(address)</code></td><td>Owner</td><td>Add a team member to commission split</td></tr>
+          <tr><td><code>rescue(address, uint256)</code></td><td>Owner</td><td>Recover stuck tokens (protects team commissions)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Appendix C: Venue Integration -->
+    <section class="section" id="appendix-c">
+      <div class="section-badge appendix">Appendix C</div>
+      <h2>Venue Integration</h2>
+      <p>The fund connects to multiple decentralized perpetual exchanges, each with its own API, fee model, and asset coverage. The strategy engine handles venue-specific differences transparently, presenting a unified interface to the trading logic.</p>
+
+      <h3>gTrade (Gains Network)</h3>
+      <p>A decentralized leveraged trading platform on Arbitrum supporting crypto, forex, and stock pairs. The fund connects via both WebSocket (real-time price updates) and REST API (trade execution and position management).</p>
+      <table>
+        <thead>
+          <tr><th>Property</th><th>Detail</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Asset Classes</td><td>Crypto, forex, stocks</td></tr>
+          <tr><td>Data Feed</td><td>WebSocket (real-time) + REST</td></tr>
+          <tr><td>Fee Model</td><td>Opening/closing fees, spread, rollover, funding rate</td></tr>
+          <tr><td>Price Scaling</td><td>Prices scaled by 1e10</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Ostium</h3>
+      <p>A decentralized exchange focused on forex and commodities trading on Arbitrum. Provides broad coverage of traditional finance asset classes in a DeFi-native format.</p>
+      <table>
+        <thead>
+          <tr><th>Property</th><th>Detail</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Asset Classes</td><td>Forex, commodities, indices, crypto, metals, energy</td></tr>
+          <tr><td>Pairs</td><td>58 pairs across 6 asset classes</td></tr>
+          <tr><td>Data Feed</td><td>REST polling + GraphQL subgraph</td></tr>
+          <tr><td>Fee Model</td><td>Dynamic fees based on OI skew and utilization</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Fee Model Accuracy</h3>
+      <p>Each venue integration includes a dedicated fee model that accurately calculates the total cost of each trade. The backtesting engine uses these same fee models, ensuring that backtest results reflect real trading economics. Fees accounted for include trading commissions, spread costs, rollover/funding charges, and venue-specific dynamic fee components.</p>
+    </section>
+
+    <!-- Appendix D: Glossary -->
+    <section class="section" id="appendix-d">
+      <div class="section-badge appendix">Appendix D</div>
+      <h2>Glossary</h2>
+      <table>
+        <thead>
+          <tr><th>Term</th><th>Definition</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Arbitrum</strong></td><td>An Ethereum Layer 2 scaling network that provides faster, cheaper transactions while inheriting Ethereum's security guarantees.</td></tr>
+          <tr><td><strong>Conviction Tier</strong></td><td>A classification of signal strength (high, medium, research) that determines position sizing, leverage, and priority.</td></tr>
+          <tr><td><strong>Epoch</strong></td><td>A settlement cycle (typically daily) during which withdrawal requests are collected and processed at the finalization NAV.</td></tr>
+          <tr><td><strong>Max Drawdown</strong></td><td>The largest peak-to-trough decline in portfolio value, measuring the worst-case loss experienced during a period.</td></tr>
+          <tr><td><strong>Mean Reversion</strong></td><td>A statistical phenomenon where prices that move significantly away from their average tend to return toward it. The core trading thesis of REGIME.fi.</td></tr>
+          <tr><td><strong>NAV (Net Asset Value)</strong></td><td>The per-share value of the fund, calculated as total assets minus liabilities divided by outstanding shares.</td></tr>
+          <tr><td><strong>Perpetual Exchange</strong></td><td>A decentralized trading venue that offers perpetual futures contracts — leveraged positions with no expiry date.</td></tr>
+          <tr><td><strong>Profit Factor</strong></td><td>The ratio of gross profits to gross losses. A profit factor above 1.0 indicates a profitable strategy; above 1.5 is considered strong.</td></tr>
+          <tr><td><strong>Share Price</strong></td><td>Synonymous with NAV. The current USDC value of one fund share.</td></tr>
+          <tr><td><strong>USDC</strong></td><td>A US dollar-pegged stablecoin. REGIME.fi is denominated in USDC — all deposits, trades, and withdrawals use USDC.</td></tr>
+          <tr><td><strong>Win Rate</strong></td><td>The percentage of closed trades that resulted in a profit. Used alongside profit factor to evaluate strategy performance.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
   </div>
 
 </body>

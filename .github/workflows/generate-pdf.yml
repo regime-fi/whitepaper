@@ -1,0 +1,78 @@
+name: Generate PDF
+
+on:
+  push:
+    branches: [main]
+    paths: ['index.html']
+
+permissions:
+  contents: write
+
+jobs:
+  generate-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Puppeteer
+        run: npm init -y && npm install puppeteer
+
+      - name: Generate PDF
+        run: |
+          node -e "
+          const puppeteer = require('puppeteer');
+          const path = require('path');
+
+          (async () => {
+            const browser = await puppeteer.launch({
+              headless: true,
+              args: ['--no-sandbox', '--disable-setuid-sandbox']
+            });
+            const page = await browser.newPage();
+
+            // Load the whitepaper
+            const filePath = 'file://' + path.resolve('index.html');
+            await page.goto(filePath, { waitUntil: 'networkidle0', timeout: 30000 });
+
+            // Wait for fonts to load
+            await page.evaluateHandle('document.fonts.ready');
+
+            // Hide the download button and sidebar for PDF
+            await page.addStyleTag({
+              content: \`
+                .download-btn { display: none !important; }
+                .sidebar { display: none !important; }
+                .main { margin-left: 0 !important; }
+              \`
+            });
+
+            // Generate PDF
+            await page.pdf({
+              path: 'REGIME-Whitepaper.pdf',
+              format: 'A4',
+              printBackground: true,
+              margin: {
+                top: '48px',
+                right: '48px',
+                bottom: '48px',
+                left: '48px'
+              },
+              displayHeaderFooter: false
+            });
+
+            await browser.close();
+            console.log('PDF generated successfully');
+          })();
+          "
+
+      - name: Commit PDF
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add REGIME-Whitepaper.pdf
+          git diff --cached --quiet || git commit -m "chore: regenerate whitepaper PDF"
+          git push

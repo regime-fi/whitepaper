@@ -342,7 +342,16 @@
       .section { padding: 48px 20px; }
       .section h2 { font-size: 26px; }
       .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .flow-node { white-space: normal; min-width: 0; font-size: 12px; padding: 8px 12px; }
+      .flow-arrow { font-size: 14px; }
+      .diagram { padding: 20px 16px; }
+      .section table { font-size: 12px; display: block; overflow-x: auto; }
+      .section th, .section td { padding: 8px 10px; }
     }
+
+    /* Prevent horizontal overflow */
+    html, body { overflow-x: hidden; }
+    .main { overflow-x: hidden; }
 
     /* === Footer === */
     .wp-footer {
@@ -426,6 +435,15 @@
     }
     .download-btn:active {
       transform: translateY(0);
+    }
+    @media (max-width: 600px) {
+      .download-btn {
+        bottom: 20px;
+        right: 16px;
+        padding: 12px 18px;
+        font-size: 13px;
+        border-radius: 10px;
+      }
     }
     .download-btn svg {
       width: 16px;

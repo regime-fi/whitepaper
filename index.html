@@ -515,6 +515,64 @@
       <p>Each venue has its own fee structure, execution mechanics, and price feeds. The fund's fee model accurately simulates each venue's costs, ensuring that only trades with a genuine edge after fees are executed.</p>
     </section>
 
+    <!-- 04: AI-Driven Strategy Evolution -->
+    <section class="section" id="ai-evolution">
+      <div class="section-badge">04 — AI-Driven Strategy Evolution</div>
+      <h2>A Strategy That Improves Every Night</h2>
+      <p>Most trading systems are designed once and deployed. Over time, market conditions shift, edge decays, and what once worked stops working. The traditional response is manual intervention — a trader reviews results, makes adjustments based on intuition, and hopes the changes help. This is slow, subjective, and prone to cognitive bias.</p>
+      <p>REGIME.fi takes a fundamentally different approach. Every night, an AI system — powered by Claude, Anthropic's most capable model — runs a structured experimentation cycle against the fund's historical trading data. This isn't a black-box optimizer searching for overfitted parameters. It's a hypothesis-driven research process:</p>
+
+      <!-- AI Experiment Loop Diagram -->
+      <div class="diagram">
+        <div class="diagram-title">Nightly AI Experiment Cycle</div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+          <div class="flow-row">
+            <div class="flow-node highlight" style="min-width: 160px;">&#128300; Hypothesis</div>
+          </div>
+          <div class="flow-arrow-down">&#8595;</div>
+          <div class="flow-row">
+            <div class="flow-node" style="min-width: 160px;">&#9881; Configure</div>
+          </div>
+          <div class="flow-arrow-down">&#8595;</div>
+          <div class="flow-row">
+            <div class="flow-node" style="min-width: 160px;">&#9654; Backtest</div>
+          </div>
+          <div class="flow-arrow-down">&#8595;</div>
+          <div class="flow-row">
+            <div class="flow-node" style="min-width: 160px;">&#128202; Analyze</div>
+          </div>
+          <div class="flow-arrow-down">&#8595;</div>
+          <div class="flow-row">
+            <div class="flow-node teal" style="min-width: 160px;">&#10003; Promote / &#10007; Reject</div>
+          </div>
+          <div style="font-size: 12px; color: var(--text-subtle); margin-top: 8px; font-family: var(--font-mono);">Repeats nightly &bull; 10+ experiments per cycle</div>
+        </div>
+      </div>
+
+      <h3>How It Works</h3>
+      <p>Each night, the AI reviews the fund's recent trading performance and identifies areas for potential improvement. It formulates specific, testable hypotheses — for example, whether adjusting a risk parameter would reduce drawdowns without sacrificing returns, or whether a new market filter could improve signal quality during trending conditions.</p>
+      <p>For each hypothesis, the AI configures a backtest: a replay of historical market data through the strategy engine with the proposed changes applied. The backtest uses the same venue-accurate fee models as live trading, ensuring that results reflect real-world economics. Spreads, rollover fees, funding rates, and execution costs are all accounted for.</p>
+      <p>After each backtest completes, the AI analyzes the results against the fund's standard evaluation framework — a consistent set of metrics including profit factor, win rate, drawdown, fee impact, and trade distribution. Changes are only promoted to the live strategy if they demonstrate clear, measurable improvement without introducing new risks.</p>
+
+      <div class="callout">
+        This process has produced over 15 documented iterations of strategy improvement since inception. Each iteration builds on the last, creating a compound effect where small, validated improvements accumulate into significant performance gains over time.
+      </div>
+
+      <h3>The Backtesting Framework</h3>
+      <p>Rigorous backtesting is the foundation of trustworthy strategy development. The fund's backtesting engine replays historical market data through the complete strategy pipeline — from raw price feeds through signal generation, conviction scoring, position sizing, entry, exit, and settlement — exactly as it runs in production.</p>
+      <p>Key properties of the backtesting framework:</p>
+      <ul>
+        <li><strong>Venue-accurate fee models</strong> — each exchange's specific fee structure is simulated precisely, including trading fees, spread costs, and rollover charges</li>
+        <li><strong>No lookahead bias</strong> — the engine processes candles sequentially, making decisions only on data available at the time</li>
+        <li><strong>Consistent evaluation metrics</strong> — every experiment is measured against the same standardized framework, making comparisons meaningful</li>
+        <li><strong>Parameter sweep support</strong> — systematic exploration of parameter spaces to find robust values rather than fragile optima</li>
+      </ul>
+
+      <h3>Why AI-Driven Evolution Matters</h3>
+      <p>Markets are not static. Volatility regimes change, correlations shift, and new participants alter market microstructure. A strategy that works today may underperform tomorrow — not because it was poorly designed, but because conditions changed.</p>
+      <p>Continuous AI-driven experimentation addresses this directly. Rather than waiting for performance degradation to trigger manual review, the system proactively searches for improvements every night. This creates a feedback loop where the strategy is always adapting, always testing, and always evolving — guided by data rather than human intuition or emotion.</p>
+    </section>
+
   </div>
 
 </body>

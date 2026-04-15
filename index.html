@@ -665,6 +665,128 @@
       </ul>
     </section>
 
+    <!-- 07: Risk Management -->
+    <section class="section" id="risk">
+      <div class="section-badge">07 — Risk Management</div>
+      <h2>Every Trade Is Sized to Lose</h2>
+      <p>The fund's risk management philosophy starts from a simple premise: every trade might be a loser. Rather than optimizing for large wins, the system is designed so that losing trades have minimal impact while winning trades accumulate steadily over time. Edge comes from consistency, not from any single position.</p>
+
+      <h3>Tiered Conviction Sizing</h3>
+      <p>Not all trading signals are created equal. The fund uses a tiered conviction system that allocates more capital to higher-confidence setups and less to weaker signals. Each tier has its own leverage limits and risk allocation, ensuring that position sizing is always proportional to signal strength.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Signal Quality</th>
+            <th>Risk Allocation</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>High Conviction</strong></td>
+            <td>Strong overextension + confirming signals</td>
+            <td>Largest</td>
+            <td>Primary alpha generation</td>
+          </tr>
+          <tr>
+            <td><strong>Medium Conviction</strong></td>
+            <td>Moderate overextension or partial confirmation</td>
+            <td>Moderate</td>
+            <td>Supplementary returns</td>
+          </tr>
+          <tr>
+            <td><strong>Research</strong></td>
+            <td>Weak signals, testing hypotheses</td>
+            <td>Minimal</td>
+            <td>Data collection for strategy improvement</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Position Controls</h3>
+      <ul>
+        <li><strong>Position limits</strong> — maximum concurrent positions prevent overexposure to correlated moves</li>
+        <li><strong>Priority eviction</strong> — high-conviction signals can replace lower-conviction positions, ensuring capital is always allocated to the best opportunities</li>
+        <li><strong>Cooldown periods</strong> — after a loss, the system pauses before re-entering, preventing revenge trading and allowing conditions to reset</li>
+        <li><strong>Maximum hold duration</strong> — positions that haven't reached their target within a time window are closed, preventing capital from being tied up in stale trades</li>
+      </ul>
+
+      <h3>Fee-Aware Execution</h3>
+      <p>Every potential trade is validated against the venue's actual fee structure before execution. If the expected round-trip fees (entry + exit) would consume too large a portion of the expected profit, the trade is skipped. This prevents the fund from taking trades where fees eat the edge — a common problem with high-frequency strategies on leveraged exchanges.</p>
+
+      <h3>Trailing Stops</h3>
+      <p>When a position reaches a meaningful profit target, a trailing stop activates to protect gains. Rather than waiting for either the take-profit or stop-loss, the trailing stop locks in a portion of the unrealized profit and follows the price as it continues to move favorably. This mechanism captures additional upside while limiting the risk of giving back gains.</p>
+    </section>
+
+    <!-- 08: Security Model -->
+    <section class="section" id="security">
+      <div class="section-badge">08 — Security Model</div>
+      <h2>Zero-Trust Architecture</h2>
+      <p>REGIME.fi's infrastructure is designed around a core principle: the trading bot — which manages private keys and executes trades with real capital — must have zero attack surface. This is achieved through strict server isolation and one-way data flow.</p>
+
+      <!-- Security Architecture Diagram -->
+      <div class="diagram">
+        <div class="diagram-title">Infrastructure Isolation</div>
+        <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: start;">
+          <!-- Bot Server -->
+          <div style="background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 20px;">
+            <div style="font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 12px;">Bot Server</div>
+            <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
+              &#128274; Private keys<br>
+              &#9881; Trading engine<br>
+              &#128202; Strategy logic<br>
+              &#128683; Zero inbound ports
+            </div>
+            <div style="margin-top: 12px; padding: 8px; background: rgba(0,214,143,0.1); border: 1px solid rgba(0,214,143,0.2); border-radius: 6px; font-size: 11px; color: var(--profit-green); text-align: center;">
+              No attack surface
+            </div>
+          </div>
+
+          <!-- Arrow -->
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 40px; gap: 4px;">
+            <div style="font-size: 11px; color: var(--text-subtle); font-family: var(--font-mono); writing-mode: vertical-lr; transform: rotate(180deg); margin-bottom: 8px;">outbound only</div>
+            <div style="font-size: 24px; color: var(--brand-blue);">&#8594;</div>
+            <div style="font-size: 11px; color: var(--text-subtle); font-family: var(--font-mono);">one-way</div>
+          </div>
+
+          <!-- Web Server -->
+          <div style="background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 20px;">
+            <div style="font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 12px;">Web Server</div>
+            <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
+              &#128225; WebSocket relay<br>
+              &#127760; Public dashboard<br>
+              &#128196; Read-only data<br>
+              &#128274; SSL / Nginx
+            </div>
+            <div style="margin-top: 12px; padding: 8px; background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.2); border-radius: 6px; font-size: 11px; color: var(--reward-amber); text-align: center;">
+              Compromise ≠ fund risk
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>How Isolation Works</h3>
+      <ul>
+        <li><strong>No shared code</strong> — the bot and dashboard share zero dependencies, imports, or packages. Types are intentionally duplicated rather than shared, eliminating supply chain attack vectors between the systems.</li>
+        <li><strong>No shared infrastructure</strong> — separate servers, separate filesystems, separate processes. No database connections, no shared secrets beyond the relay authentication token.</li>
+        <li><strong>Outbound-only communication</strong> — the bot connects outbound to the relay. No ports are open on the bot server. An attacker who compromises the web server cannot initiate any connection to the bot.</li>
+        <li><strong>One-way data flow</strong> — data flows from bot to relay to dashboard. No messages flow back. The relay broadcasts trading data to connected dashboards but cannot send commands to the bot.</li>
+      </ul>
+
+      <h3>On-Chain Safety Layers</h3>
+      <p>Beyond infrastructure isolation, the smart contracts enforce their own safety constraints:</p>
+      <ul>
+        <li><strong>Position caps</strong> — single trade ≤10% of fund, total exposure ≤50% of fund</li>
+        <li><strong>Exact approvals</strong> — no blanket USDC spending authority; each operation approves only the precise amount needed</li>
+        <li><strong>On-chain verification</strong> — settlement prices and PnL are verified against the venue's on-chain records</li>
+      </ul>
+
+      <div class="callout">
+        The security model ensures that even in a worst-case scenario — full compromise of the web server and dashboard — an attacker gains access to trading data but cannot execute trades, move funds, or send any command to the bot. The fund's capital remains secure.
+      </div>
+    </section>
+
   </div>
 
 </body>

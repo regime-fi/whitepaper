@@ -787,6 +787,105 @@
       </div>
     </section>
 
+    <!-- 09: Transparency & Dashboard -->
+    <section class="section" id="transparency">
+      <div class="section-badge">09 — Transparency</div>
+      <h2>No Black Box</h2>
+      <p>Transparency is not an afterthought — it is a core design principle. Every action the fund takes is visible in real time on the public dashboard at <strong>regime.fi</strong>.</p>
+      <p>The dashboard provides a live view of:</p>
+      <ul>
+        <li><strong>Active positions</strong> — current trades with entry prices, direction, leverage, and unrealized PnL</li>
+        <li><strong>Trade history</strong> — every closed position with full details: entry, exit, fees, net profit or loss</li>
+        <li><strong>NAV history</strong> — the fund's net asset value over time, charted for easy visualization of performance trends</li>
+        <li><strong>Portfolio metrics</strong> — aggregate statistics including profit factor, win rate, and drawdown</li>
+        <li><strong>Fund composition</strong> — total staked value, share count, current NAV price</li>
+      </ul>
+      <p>Data is delivered via WebSocket, meaning the dashboard updates in real time — not on a delay, not on a refresh cycle. When a trade opens or closes, you see it immediately.</p>
+
+      <div class="callout">
+        Traditional funds publish monthly or quarterly reports. REGIME.fi publishes every trade, every second. Stakers never have to wonder what the fund is doing with their capital.
+      </div>
+    </section>
+
+    <!-- 10: Fee Structure -->
+    <section class="section" id="fees">
+      <div class="section-badge">10 — Fee Structure</div>
+      <h2>Aligned Incentives</h2>
+      <p>REGIME.fi charges no management fees, no deposit fees, and no withdrawal fees. The team earns only from a share of the fund's trading profits. If the fund doesn't make money, neither does the team.</p>
+
+      <!-- Fee Distribution Diagram -->
+      <div class="diagram">
+        <div class="diagram-title">Profit Distribution</div>
+        <div style="display: flex; align-items: stretch; gap: 2px; height: 48px; border-radius: 8px; overflow: hidden; margin-bottom: 16px;">
+          <div style="flex: 95; background: var(--yield-teal); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 14px; font-weight: 500; color: var(--bg-base);">95%</div>
+          <div style="flex: 4; background: var(--brand-blue); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: #fff;">4%</div>
+          <div style="flex: 1; background: var(--reward-amber); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 9px; font-weight: 500; color: var(--bg-base);">1%</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; font-size: 13px; text-align: center;">
+          <div>
+            <div style="color: var(--yield-teal); font-family: var(--font-display); font-weight: 700;">95%</div>
+            <div style="color: var(--text-secondary);">Stakers</div>
+            <div style="color: var(--text-subtle); font-size: 11px;">Retained in fund NAV</div>
+          </div>
+          <div>
+            <div style="color: var(--brand-blue); font-family: var(--font-display); font-weight: 700;">4%</div>
+            <div style="color: var(--text-secondary);">Team Treasury</div>
+            <div style="color: var(--text-subtle); font-size: 11px;">Split equally among team</div>
+          </div>
+          <div>
+            <div style="color: var(--reward-amber); font-family: var(--font-display); font-weight: 700;">1%</div>
+            <div style="color: var(--text-secondary);">Operations</div>
+            <div style="color: var(--text-subtle); font-size: 11px;">Gas costs &amp; infrastructure</div>
+          </div>
+        </div>
+      </div>
+
+      <p>This fee structure is enforced at the smart contract level. The 5% total fee is deducted only from profitable trades — when a position is settled with a gain, 1% goes to the operations wallet for gas costs and infrastructure, and 4% goes to the RegimeTreasury contract where it is split equally among team members.</p>
+      <p>Team members claim their share from the treasury on demand. The contract ensures that the owner cannot drain accumulated team commissions, and the rescue function explicitly protects allocated funds from being swept.</p>
+
+      <div class="callout">
+        <strong>No profit = no fees.</strong> The team only earns when stakers earn. This is the simplest and most honest incentive alignment possible.
+      </div>
+    </section>
+
+    <!-- 11: Roadmap -->
+    <section class="section" id="roadmap">
+      <div class="section-badge">11 — Roadmap</div>
+      <h2>What's Next</h2>
+      <p>REGIME.fi is a live, functioning system — not a concept or a promise. The roadmap below reflects the team's current priorities, presented honestly and without commitments to specific timelines.</p>
+
+      <div style="display: grid; gap: 16px; margin-top: 24px;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; display: flex; gap: 16px; align-items: start;">
+          <div style="min-width: 40px; height: 40px; background: rgba(45,106,255,0.1); border: 1px solid rgba(45,106,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">&#128269;</div>
+          <div>
+            <div style="font-family: var(--font-display); font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Smart Contract Audit</div>
+            <div style="font-size: 14px;">Independent security audit of RegimeStaking and RegimeTreasury contracts before accepting external staker deposits.</div>
+          </div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; display: flex; gap: 16px; align-items: start;">
+          <div style="min-width: 40px; height: 40px; background: rgba(0,194,168,0.1); border: 1px solid rgba(0,194,168,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">&#127760;</div>
+          <div>
+            <div style="font-family: var(--font-display); font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Additional Venues</div>
+            <div style="font-size: 14px;">Integration with additional decentralized perpetual exchanges to expand the universe of tradeable pairs and capture more opportunities.</div>
+          </div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; display: flex; gap: 16px; align-items: start;">
+          <div style="min-width: 40px; height: 40px; background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">&#128200;</div>
+          <div>
+            <div style="font-family: var(--font-display); font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Strategy Diversification</div>
+            <div style="font-size: 14px;">Additional alpha sources beyond mean-reversion — expanding the strategy portfolio to capture edge from multiple independent signal types.</div>
+          </div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; display: flex; gap: 16px; align-items: start;">
+          <div style="min-width: 40px; height: 40px; background: rgba(255,77,106,0.1); border: 1px solid rgba(255,77,106,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">&#9878;</div>
+          <div>
+            <div style="font-family: var(--font-display); font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Governance</div>
+            <div style="font-size: 14px;">Evaluating governance structures that give stakers a voice in fund parameters and strategy direction, without compromising execution quality.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
 
 </body>
